@@ -1,0 +1,68 @@
+{
+  "_from": "git://github.com/cp-nilly/nodebb-plugin-import-phpbb.git#master",
+  "_id": "nodebb-plugin-import-phpbb@0.1.5",
+  "_inBundle": false,
+  "_integrity": "",
+  "_location": "/nodebb-plugin-import-phpbb",
+  "_phantomChildren": {
+    "graceful-fs": "4.1.15",
+    "mkdirp": "0.5.1",
+    "rimraf": "2.6.2"
+  },
+  "_requested": {
+    "type": "git",
+    "raw": "git://github.com/cp-nilly/nodebb-plugin-import-phpbb#master",
+    "rawSpec": "git://github.com/cp-nilly/nodebb-plugin-import-phpbb#master",
+    "saveSpec": "git://github.com/cp-nilly/nodebb-plugin-import-phpbb.git#master",
+    "fetchSpec": "git://github.com/cp-nilly/nodebb-plugin-import-phpbb.git",
+    "gitCommittish": "master"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "git://github.com/cp-nilly/nodebb-plugin-import-phpbb.git#daff009627fb7967082e93db837facb7b1b89aeb",
+  "_spec": "git://github.com/cp-nilly/nodebb-plugin-import-phpbb#master",
+  "_where": "/opt/NodeBB",
+  "author": {
+    "name": "psychobunny",
+    "email": "psycho.bunny@hotmail.com"
+  },
+  "bugs": {
+    "url": "https://github.com/belstgut/nodebb-plugin-import-phpbb/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "async": "~0.9.0",
+    "fs-extra": "~0.11.0",
+    "html-entities": "",
+    "marked": "~0.3.2",
+    "mysql": "~2.4.2",
+    "underscore": "~1.6.0"
+  },
+  "deprecated": false,
+  "description": "A phpBB2 to NodeBB data exporter",
+  "homepage": "https://github.com/belstgut/nodebb-plugin-import-phpbb#readme",
+  "keywords": [
+    "phpbb",
+    "plugin",
+    "migrate",
+    "convert",
+    "export",
+    "import"
+  ],
+  "license": "MIT",
+  "main": "./index.js",
+  "name": "nodebb-plugin-import-phpbb",
+  "nbbpm": {
+    "index": false
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/belstgut/nodebb-plugin-import-phpbb.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "0.1.5"
+}
