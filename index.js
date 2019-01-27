@@ -633,6 +633,7 @@ var request = require('request');
 
     Exporter.getPostAttachments = function(post, callback) {
         callback = !_.isFunction(callback) ? noop : callback;
+        console.log('getPostAttachments');
 
         var attachmentsFolder = Exporter.config('attachmentsFolder');
         if (attachmentsFolder == '') {
