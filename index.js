@@ -551,7 +551,7 @@ const fs = require('fs');
                                 return callback(err);
                             }
 
-                            map[topic_wBlob._tid] = topic_wBlob;
+                            map[topic._content] = topic_wBlob;
                             cb();
                         });
                     };
@@ -620,7 +620,7 @@ const fs = require('fs');
                                 return callback(err);
                             }
 
-                            map[post_wBlob._pid] = post_wBlob;
+                            map[post._content] = post_wBlob;
                             cb();
                         });
                     };
@@ -690,7 +690,7 @@ const fs = require('fs');
 
                 }
                 callback(err, post);
-                
+
             });
     };
 
