@@ -5,6 +5,7 @@ var _ = require('underscore');
 var noop = function(){};
 var logPrefix = '[nodebb-plugin-import-phpbb]';
 var request = require('request');
+const fs = require('fs');
 
 (function(Exporter) {
 
@@ -19,17 +20,17 @@ var request = require('request');
             password: config.dbpass || config.pass || config.password || '',
             port: config.dbport || config.port || 3306,
             database: config.dbname || config.name || config.database || 'phpbb',
-            
+
             // example: http://localhost/forum/images/avatar/
-            avatarFolder: config.custom.avatarFolder || '', 
+            avatarFolder: config.custom.avatarFolder || '',
             // got to look at upload folder to find this out
-            avatarHash: config.custom.avatarHash || 'fac102cfc934b0dc8ef51ec172279d8c', 
+            avatarHash: config.custom.avatarHash || 'fac102cfc934b0dc8ef51ec172279d8c',
             // admin group number of your phpbb board (default admin group for me was 5)
             adminGroup: config.custom.adminGroup || '',
             // moderator group number of your phpbb board. (default global moderator group for me was 4)
             modGroup: config.custom.modGroup || '',
             // example: http://localhost/forum/files/
-            attachmentsFolder: config.custom.attachmentsFolder || '' 
+            attachmentsFolder: config.custom.attachmentsFolder || ''
         };
 
         Exporter.config(_config);
@@ -46,13 +47,13 @@ var request = require('request');
     };
     Exporter.getPaginatedUsers = function(start, limit, callback) {
         callback = !_.isFunction(callback) ? noop : callback;
-        
+
         var adminGroup = Exporter.config('adminGroup');
         var modGroup = Exporter.config('modGroup');
         var userGroups;
         var bannedUsers;
         var users;
-        
+
         var actions = [
             function(cb) {
                 Exporter.getBannedUsers(function(err, res) {
@@ -60,7 +61,7 @@ var request = require('request');
                         Exporter.error(err);
                         return callback(err);
                     }
-    
+
                     bannedUsers = res;
                     cb();
                 });
@@ -82,24 +83,24 @@ var request = require('request');
                         Exporter.error(err);
                         return callback(err);
                     }
-                    
+
                     users = res;
                     cb();
                 });
             }
         ];
-        
+
         async.parallel(actions, function(err) {
             if (err) {
                 Exporter.error(err);
                 return callback(err);
             }
-            
+
             //normalize dependent variables here
             var map = {};
             users.forEach(function(user) {
                 user._groups = userGroups[user._uid] || [];
-                
+
                 bannedUsers.some(function(bannedUser) {
                     if (bannedUser == user._uid) {
                         user._banned = 1;
@@ -107,7 +108,7 @@ var request = require('request');
                     }
                     return false;
                 });
-                
+
                 user._groups.some(function(group) {
                     if (adminGroup != '' && parseInt(adminGroup, 10) == group) {
                         user._level = 'administrator';
@@ -130,13 +131,13 @@ var request = require('request');
         var avatarFolder = Exporter.config('avatarFolder');
         var avatarHash = Exporter.config('avatarHash');
         var startms = +new Date();
-        var query = 'SELECT ' 
-            + prefix + 'users.user_id as _uid, ' 
+        var query = 'SELECT '
+            + prefix + 'users.user_id as _uid, '
             + prefix + 'users.user_email as _email, '
-            + prefix + 'users.username as _username, ' 
-            + prefix + 'users.user_regdate as _joindate, ' 
+            + prefix + 'users.username as _username, '
+            + prefix + 'users.user_regdate as _joindate, '
             + prefix + 'users.username_clean as _alternativeUsername, '
-            + prefix + 'users.user_sig as _signature, ' 
+            + prefix + 'users.user_sig as _signature, '
             + prefix + 'users.user_avatar as _pictureFilename, '
             // _pictureBlob (handled below)
             // _path
@@ -151,16 +152,16 @@ var request = require('request');
             // _showemail
             + prefix + 'users.user_lastpost_time as _lastposttime, '
             + prefix + 'users.user_lastvisit as _lastonline '
-            + 'FROM ' + prefix + 'users ' 
-            + 'WHERE ' + prefix + 'users.user_type <> 2 AND ' + prefix + 'users.user_type <> 1 ' 
+            + 'FROM ' + prefix + 'users '
+            + 'WHERE ' + prefix + 'users.user_type <> 2 AND ' + prefix + 'users.user_type <> 1 '
             + (start >= 0 && limit >= 0 ? 'LIMIT ' + start + ',' + limit : '');
-    
+
         if (!Exporter.connection) {
             err = {error: 'MySQL connection is not setup. Run setup(config) first'};
             Exporter.error(err.error);
             return callback(err);
         }
-        
+
         Exporter.connection.query(query,
             function(err, rows) {
                 if (err) {
@@ -172,22 +173,22 @@ var request = require('request');
                 rows.forEach(function(row) {
                     // nbb forces signatures to be less than 255 chars
                     row._signature = Exporter.truncateStr(row._signature || '', 255);
-                    
+
                     // from unix timestamp (s) to JS timestamp (ms)
                     row._joindate = ((row._joindate || 0) * 1000) || startms;
                     row._lastposttime = ((row._lastposttime || 0) * 1000) || 0;
                     row._lastonline = ((row._lastonline || 0) * 1000) || undefined;
-                    
+
                     // lower case the email for consistency
                     row._email = (row._email || '').toLowerCase();
-                    
+
                     // I don't know about you about I noticed a lot my
                     // users have incomplete urls, urls like: http://
-                    row._website = Exporter.validateUrl(row._website); 
-                    
+                    row._website = Exporter.validateUrl(row._website);
+
                     row._location = (row._location || '').trim();
-                    row._birthday = Exporter.formatPhpbbDate(row._birthday); 
-                    
+                    row._birthday = Exporter.formatPhpbbDate(row._birthday);
+
                     // handle avatar
                     if (avatarFolder != '') {
                         row._pictureFilename = (row._pictureFilename || '')
@@ -196,14 +197,14 @@ var request = require('request');
                         row._pictureFilename = '';
                     }
                 });
-                
+
                 var getAvatarBlobs = rows.map(function(user) {
                     return function(cb) {
                         if (user._pictureFilename == '') {
                             cb();
                             return;
                         }
-                        
+
                         var uri = avatarFolder + user._pictureFilename;
                         request(uri, { encoding: null }, function(error, response, body) {
                             if (err || response.statusCode != 200) {
@@ -211,7 +212,7 @@ var request = require('request');
                                 cb();
                                 return;
                             }
-                            
+
                             user._pictureBlob = body;
                             cb();
                         });
@@ -226,9 +227,9 @@ var request = require('request');
     Exporter.getBannedUsers = function(callback) {
         var err;
         var prefix = Exporter.config('prefix');
-        var query = 'SELECT ' 
-            + prefix + 'banlist.ban_userid as _uid ' 
-            + 'FROM ' + prefix + 'banlist ' 
+        var query = 'SELECT '
+            + prefix + 'banlist.ban_userid as _uid '
+            + 'FROM ' + prefix + 'banlist '
             + 'WHERE ' + prefix + 'banlist.ban_userid <> 0';
 
         if (!Exporter.connection) {
@@ -257,7 +258,7 @@ var request = require('request');
         var query = 'SELECT '
             + prefix + 'user_group.group_id as _gid, '
             + prefix + 'user_group.user_id as _uid, '
-            + prefix + 'user_group.user_pending as _pending ' 
+            + prefix + 'user_group.user_pending as _pending '
             + 'FROM ' + prefix + 'user_group';
 
         if (!Exporter.connection) {
@@ -279,7 +280,7 @@ var request = require('request');
                     if (groups[row._uid] == undefined) {
                         groups[row._uid] = [];
                     }
-                    
+
                     if (row._pending != 1) {
                         groups[row._uid].push(row._gid);
                     }
@@ -288,7 +289,7 @@ var request = require('request');
                 callback(null, groups);
             });
     };
-    
+
     Exporter.getMessages = function(callback) {
         return Exporter.getPaginatedMessages(0, -1, callback);
     };
@@ -298,13 +299,13 @@ var request = require('request');
         var err;
         var prefix = Exporter.config('prefix');
         var startms = +new Date();
-        var query = 'SELECT ' 
-            + prefix + 'privmsgs.msg_id as _mid, ' 
-            + prefix + 'privmsgs.author_id as _fromuid, ' 
-            + prefix + 'privmsgs.to_address as _touid, ' 
-            + prefix + 'privmsgs.message_text as _content, ' 
+        var query = 'SELECT '
+            + prefix + 'privmsgs.msg_id as _mid, '
+            + prefix + 'privmsgs.author_id as _fromuid, '
+            + prefix + 'privmsgs.to_address as _touid, '
+            + prefix + 'privmsgs.message_text as _content, '
             + prefix + 'privmsgs.message_time as _timestamp '
-            +'FROM ' + prefix + 'privmsgs ' 
+            +'FROM ' + prefix + 'privmsgs '
             + (start >= 0 && limit >= 0 ? 'LIMIT ' + start + ',' + limit : '');
 
         if (!Exporter.connection) {
@@ -343,13 +344,13 @@ var request = require('request');
         var prefix = Exporter.config('prefix');
         var adminGroup = Exporter.config('adminGroup');
         var modGroup = Exporter.config('modGroup');
-        var query = 'SELECT ' 
-            + prefix + 'groups.group_id as _gid, ' 
+        var query = 'SELECT '
+            + prefix + 'groups.group_id as _gid, '
             + prefix + 'groups.group_name as _name, '
             // _ownerUid (handled below)
             + prefix + 'groups.group_desc as _description '
             // _timestamp
-            +'FROM ' + prefix + 'groups ' 
+            +'FROM ' + prefix + 'groups '
             + (start >= 0 && limit >= 0 ? 'LIMIT ' + start + ',' + limit : '');
 
         if (!Exporter.connection) {
@@ -384,10 +385,10 @@ var request = require('request');
                         if (modGroup != '' && parseInt(modGroup, 10) == row._gid) {
                             return;
                         }
-                        
+
                         row._ownerUid = gLeaders[row._gid];
                         row._description = row._description || '';
-                        
+
                         map[row._gid] = row;
                     });
                     callback(null, map);
@@ -400,10 +401,10 @@ var request = require('request');
         var err;
         var prefix = Exporter.config('prefix');
         var query = 'SELECT '
-            + prefix + 'user_group.group_id as _gid, ' 
-            + prefix + 'user_group.user_id as _uid, ' 
-            + prefix + 'user_group.group_leader as _leader, ' 
-            + prefix + 'user_group.user_pending as _pending ' 
+            + prefix + 'user_group.group_id as _gid, '
+            + prefix + 'user_group.user_id as _uid, '
+            + prefix + 'user_group.group_leader as _leader, '
+            + prefix + 'user_group.user_pending as _pending '
             + 'FROM ' + prefix + 'user_group ';
 
         if (!Exporter.connection) {
@@ -453,12 +454,12 @@ var request = require('request');
         var err;
         var prefix = Exporter.config('prefix');
         var startms = +new Date();
-        var query = 'SELECT ' 
-            + prefix + 'forums.forum_id as _cid, ' 
-            + prefix + 'forums.forum_name as _name, ' 
+        var query = 'SELECT '
+            + prefix + 'forums.forum_id as _cid, '
+            + prefix + 'forums.forum_name as _name, '
             + prefix + 'forums.forum_desc as _description '
-            + 'FROM ' + prefix + 'forums ' 
-            + 'WHERE ' + prefix + 'forums.forum_type <> 0 ' 
+            + 'FROM ' + prefix + 'forums '
+            + 'WHERE ' + prefix + 'forums.forum_type <> 0 '
             + (start >= 0 && limit >= 0 ? 'LIMIT ' + start + ',' + limit : '');
 
         if (!Exporter.connection) {
@@ -497,28 +498,28 @@ var request = require('request');
         var err;
         var prefix = Exporter.config('prefix');
         var startms = +new Date();
-        var query = 'SELECT ' 
-            + prefix + 'topics.topic_id as _tid, ' 
+        var query = 'SELECT '
+            + prefix + 'topics.topic_id as _tid, '
             + prefix + 'posts.poster_id as _uid, '
             + prefix + 'topics.forum_id as _cid, '
             + prefix + 'posts.poster_ip as _ip, '
-            + prefix + 'topics.topic_title as _title, ' 
+            + prefix + 'topics.topic_title as _title, '
             + prefix + 'posts.post_text as _content, '
             // _thumb
             + prefix + 'topics.topic_time as _timestamp, '
-            + prefix + 'topics.topic_views as _viewcount, ' 
+            + prefix + 'topics.topic_views as _viewcount, '
             // _locked (handled below)
             // _attachmentsBlobs (handled below)
             // _deleted (used with unapproved topics)
             // _pinned (handled below)
             + prefix + 'posts.post_edit_time as _edited, '
             // below are aux vars used for setting other vars
-            //+ prefix + 'topics.topic_approved as _approved, ' 
+            //+ prefix + 'topics.topic_approved as _approved, '
             + prefix + 'topics.topic_status as _status, '
             + prefix + 'topics.topic_type as _type, '
             + prefix + 'topics.topic_first_post_id as _pid ' // just a ref for query
-            + 'FROM ' + prefix + 'topics, ' + prefix + 'posts ' 
-            + 'WHERE ' + prefix + 'topics.topic_first_post_id=' + prefix + 'posts.post_id ' 
+            + 'FROM ' + prefix + 'topics, ' + prefix + 'posts '
+            + 'WHERE ' + prefix + 'topics.topic_first_post_id=' + prefix + 'posts.post_id '
             + (start >= 0 && limit >= 0 ? 'LIMIT ' + start + ',' + limit : '');
 
         if (!Exporter.connection) {
@@ -543,7 +544,7 @@ var request = require('request');
                         topic._locked = (topic._status == 1) ? 1 : 0;
                         topic._deleted = (topic._approved == 0) ? 1 : 0;
                         topic._pinned = (topic._type > 0) ? 1 : 0;
-                        
+
                         Exporter.getPostAttachments(topic, function(err, topic_wBlob) {
                             if (err) {
                                 Exporter.error(err);
@@ -571,12 +572,12 @@ var request = require('request');
         var err;
         var prefix = Exporter.config('prefix');
         var startms = +new Date();
-        var query = 'SELECT ' 
+        var query = 'SELECT '
             + prefix + 'posts.post_id as _pid, '
-            + prefix + 'posts.topic_id as _tid, ' 
-            + prefix + 'posts.post_text as _content, ' 
+            + prefix + 'posts.topic_id as _tid, '
+            + prefix + 'posts.post_text as _content, '
             + prefix + 'posts.poster_id as _uid, '
-            + prefix + 'posts.post_time as _timestamp, ' 
+            + prefix + 'posts.post_time as _timestamp, '
             + prefix + 'posts.poster_ip as _ip, '
             + prefix + 'posts.post_edit_time as _edited '
             // _reputation
@@ -584,7 +585,7 @@ var request = require('request');
             // below are aux vars used for setting other vars
             //+ prefix + 'posts.post_approved as _approved '
             + 'FROM ' + prefix + 'posts '
-            + 'WHERE ' + prefix + 'posts.topic_id > 0 AND ' + prefix + 'posts.post_id NOT IN (SELECT ' + prefix + 'topics.topic_first_post_id ' + 'FROM ' + prefix + 'topics) ' 
+            + 'WHERE ' + prefix + 'posts.topic_id > 0 AND ' + prefix + 'posts.post_id NOT IN (SELECT ' + prefix + 'topics.topic_first_post_id ' + 'FROM ' + prefix + 'topics) '
             + (start >= 0 && limit >= 0 ? 'LIMIT ' + start + ',' + limit : '');
 
         if (!Exporter.connection) {
@@ -608,7 +609,7 @@ var request = require('request');
                             cb();
                             return;
                         }
-                        
+
                         post._content = post._content || '';
                         post._timestamp = ((post._timestamp || 0) * 1000) || startms;
                         post._edited = ((post._edited || 0) * 1000) || 0;
@@ -640,14 +641,14 @@ var request = require('request');
             callback(null, post);
             return;
         }
-        
+
         var err;
         var prefix = Exporter.config('prefix');
-        var query = 'SELECT ' 
-            + prefix + 'attachments.real_filename as _name, ' 
-            + prefix + 'attachments.physical_filename as _loc, ' 
-            + prefix + 'attachments.is_orphan as _orphan ' 
-            + 'FROM ' + prefix + 'attachments ' 
+        var query = 'SELECT '
+            + prefix + 'attachments.real_filename as _name, '
+            + prefix + 'attachments.physical_filename as _loc, '
+            + prefix + 'attachments.poster_id as _fid '
+            + 'FROM ' + prefix + 'attachments '
             + 'WHERE ' + prefix + 'attachments.post_msg_id = ' + post._pid;
 
         if (!Exporter.connection) {
@@ -656,6 +657,7 @@ var request = require('request');
             return callback(err);
         }
 
+
         Exporter.connection.query(query,
             function(err, attachments) {
                 if (err) {
@@ -663,37 +665,32 @@ var request = require('request');
                     return callback(err);
                 }
 
-                var getBlobs = attachments.map(function(attachment) {
-                    return function(cb) {
-                        if (attachment._orphan) {
-                            cb();
-                            return;
-                        }
+                for(let i in attachments){
+                    let file = attachments[i]['_loc'];
+                    let fileName = attachments[i]['_name'];
+                    let fid = attachments[i]['_fid'];
 
-                        var uri = attachmentsFolder + attachment._loc;
-                        Exporter.log(uri);
-                        request(uri, { encoding: null }, function(error, response, body) {
-                            if (err || response.statusCode != 200) {
-                                Exporter.error(err);
-                                return callback(err);
-                            }
+                    let newFName = fid + '_' + fileName;
 
-                            attachment._blob = body;
-                            cb();
-                        });
-                    };
-                });
+                    let patt = new RegExp(/<ATTACHMENT.*?\/ATTACHMENT>/gm);
+                    let test = patt.test(post._content);
 
-                async.parallel(getBlobs, function(err) {
-                    var ab = attachments.map(function(attachment) {
-                        return {
-                            "blob": attachment._blob,
-                            "filename": attachment._name
-                        };
-                    });
-                    post._attachmentsBlobs = ab;
-                    callback(err, post);
-                });
+                    if(test === true){
+                        let picUrl = '![' + newFName + '](/assets/uploads/files/' + newFName + ')';
+
+                        let patt2 = new RegExp(fileName, 'gm');
+                        post._content = post._content.replace(patt2, picUrl);
+                    }else{
+                        let attUrl = '[' + newFName + '](/assets/uploads/files/' + newFName + ')';
+                        post._content += ' ' + attURL + ' ';
+                    }
+
+                    //copy file
+                    fs.copyFile('/var/www/forum/files/' + file, '/opt/nodebb/public/uploads/files/' + newFName);
+
+                }
+                callback(err, post);
+                
             });
     };
 
@@ -807,15 +804,15 @@ var request = require('request');
         }
         return null;
     };
-    
+
     Exporter.formatPhpbbDate = function(phpbbDate) {
         var nums = (phpbbDate || '').split('-')
             .map(function(num) { return num.trim(); });
-            
+
         if (nums.length != 3) {
             return '';
         }
-        
+
         var i = 0;
         while (i < 3) {
             if (nums[i] == "0") {
@@ -823,17 +820,17 @@ var request = require('request');
             }
             i++;
         }
-        
+
         var temp = nums[1];
         nums[1] = nums[0];
         nums[0] = temp;
-        
+
         nums[0] = Exporter.pad(nums[0], 2);
         nums[1] = Exporter.pad(nums[1], 2);
         nums[2] = Exporter.pad(nums[2], 4);
         return nums.join('/');
     };
-    
+
     Exporter.pad = function(n, width, z) {
         z = z || '0';
         n = n + '';
