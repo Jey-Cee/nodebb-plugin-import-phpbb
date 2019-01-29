@@ -633,7 +633,7 @@ var request = require('request');
 
     Exporter.getPostAttachments = function(post, callback) {
         callback = !_.isFunction(callback) ? noop : callback;
-        Exporter.log('getPostAttachments');
+        //Exporter.log('getPostAttachments');
 
         var attachmentsFolder = Exporter.config('attachmentsFolder');
         if (attachmentsFolder == '') {
@@ -671,6 +671,7 @@ var request = require('request');
                         }
 
                         var uri = attachmentsFolder + attachment._loc;
+                        Exporter.log(uri);
                         request(uri, { encoding: null }, function(error, response, body) {
                             if (err || response.statusCode != 200) {
                                 Exporter.error(err);
