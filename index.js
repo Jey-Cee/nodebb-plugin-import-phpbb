@@ -5,7 +5,7 @@ var _ = require('underscore');
 var noop = function(){};
 var logPrefix = '[nodebb-plugin-import-phpbb]';
 var request = require('request');
-const fs = require('fs');
+var fs = require('fs');
 
 (function(Exporter) {
 
@@ -665,23 +665,23 @@ const fs = require('fs');
                     return callback(err);
                 }
 
-                for(let i in attachments){
-                    let file = attachments[i]['_loc'];
-                    let fileName = attachments[i]['_name'];
-                    let fid = attachments[i]['_fid'];
+                for(var i in attachments){
+                    var file = attachments[i]['_loc'];
+                    var fileName = attachments[i]['_name'];
+                    var fid = attachments[i]['_fid'];
 
-                    let newFName = fid + '_' + fileName;
+                    var newFName = fid + '_' + fileName;
 
-                    let patt = new RegExp(/<ATTACHMENT.*?\/ATTACHMENT>/gm);
-                    let test = patt.test(post._content);
+                    var  patt = new RegExp(/<ATTACHMENT.*?\/ATTACHMENT>/gm);
+                    var test = patt.test(post._content);
 
                     if(test === true){
-                        let picUrl = '![' + newFName + '](/assets/uploads/files/' + newFName + ')';
+                        var picUrl = '![' + newFName + '](/assets/uploads/files/' + newFName + ')';
 
-                        let patt2 = new RegExp(fileName, 'gm');
+                        var patt2 = new RegExp(fileName, 'gm');
                         post._content = post._content.replace(patt2, picUrl);
                     }else{
-                        let attUrl = '[' + newFName + '](/assets/uploads/files/' + newFName + ')';
+                        var attUrl = '[' + newFName + '](/assets/uploads/files/' + newFName + ')';
                         post._content += ' ' + attURL + ' ';
                     }
 
