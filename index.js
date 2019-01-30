@@ -692,8 +692,9 @@ var fs = require('fs');
                         var cs = ['/', '[', ']', '(', ')', '{', '}', '?', '*', '+', '^', '$'];
                         for(var x in cs){
                             
-                                fileName = fileName.replace(cs[x], '\\' + cs[x])
-                            
+                                var r = new RegExp('\\'+cs[x], 'g');
+                                fileName = fileName.replace(r, '\\' + cs[x])
+
                         }
 
                         var patt2 = new RegExp(fileName, 'gm');
