@@ -674,6 +674,11 @@ var fs = require('fs');
                     var newFName = fid + '_' + fileName;
                     Exporter.log(newFName);
 
+                    //copy file
+                    fs.copyFile('/var/www/forum/files/' + file, '/opt/nodebb/public/uploads/files/' + newFName, function(err){
+                        Exporter.error(err);
+                    });
+
                     /*var  patt = new RegExp(/<ATTACHMENT.*?\/ATTACHMENT>/gm);
                     var test = patt.test(post._content);
 
@@ -687,10 +692,7 @@ var fs = require('fs');
                         post._content += ' ' + attUrl + ' ';
                     }
 
-                    //copy file
-                    fs.copyFile('/var/www/forum/files/' + file, '/opt/nodebb/public/uploads/files/' + newFName, function(err){
-                        Exporter.error(err);
-                    });*/
+                    */
 
                 }
                 //Exporter.log(post);
