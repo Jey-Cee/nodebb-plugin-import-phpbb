@@ -659,14 +659,14 @@ var fs = require('fs');
         }
 
 
-        /*Exporter.connection.query(query,
+        Exporter.connection.query(query,
             function(err, attachments) {
                 if (err) {
                     Exporter.error(err);
                     return callback(err);
                 }
-
-                for(var i in attachments){
+                Exporter.log('Query OK ' + attachments);
+                /*for(var i in attachments){
                     var file = attachments[i]['_loc'];
                     var fileName = attachments[i]['_name'];
                     var fid = attachments[i]['_fid'];
@@ -691,11 +691,11 @@ var fs = require('fs');
                         Exporter.error(err);
                     });
 
-                }
-                Exporter.log(post);
+                }*/
+                //Exporter.log(post);
                 callback(err, post);
 
-            });*/
+            });
     };
 
     Exporter.teardown = function(callback) {
