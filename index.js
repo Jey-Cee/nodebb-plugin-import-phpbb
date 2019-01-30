@@ -668,13 +668,13 @@ var fs = require('fs');
                 Exporter.log('Query OK ' + JSON.stringify(attachments));
                 for(var i in attachments){
                     var file = attachments[i]['_loc'];
-                    Exporter.log(file);
-                    /*var fileName = attachments[i]['_name'];
+                    var fileName = attachments[i]['_name'];
                     var fid = attachments[i]['_fid'];
 
                     var newFName = fid + '_' + fileName;
+                    Exporter.log(newFName);
 
-                    var  patt = new RegExp(/<ATTACHMENT.*?\/ATTACHMENT>/gm);
+                    /*var  patt = new RegExp(/<ATTACHMENT.*?\/ATTACHMENT>/gm);
                     var test = patt.test(post._content);
 
                     if(test === true){
