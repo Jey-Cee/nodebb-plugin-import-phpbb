@@ -634,7 +634,7 @@ var fs = require('fs');
 
     Exporter.getPostAttachments = function(post, callback) {
         callback = !_.isFunction(callback) ? noop : callback;
-        //Exporter.log('getPostAttachments');
+        Exporter.log('getPostAttachments');
 
         var attachmentsFolder = Exporter.config('attachmentsFolder');
         if (attachmentsFolder == '') {
