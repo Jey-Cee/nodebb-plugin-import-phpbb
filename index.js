@@ -659,7 +659,7 @@ var fs = require('fs');
         }
 
 
-        Exporter.connection.query(query,
+        /*Exporter.connection.query(query,
             function(err, attachments) {
                 if (err) {
                     Exporter.error(err);
@@ -695,7 +695,7 @@ var fs = require('fs');
                 Exporter.log(post);
                 callback(err, post);
 
-            });
+            });*/
     };
 
     Exporter.teardown = function(callback) {
