@@ -550,7 +550,7 @@ var fs = require('fs');
                                 Exporter.error(err);
                                 return callback(err);
                             }
-
+                            Exporter.log(topic_wBlob);
                             map[topic._content] = topic_wBlob;
                             cb();
                         });
@@ -690,15 +690,13 @@ var fs = require('fs');
 
                         var patt2 = new RegExp(fileName, 'gm');
                         post._content = post._content.replace(patt2, picUrl);
-                        
+
                     }else{
                         var attUrl = '[' + newFName + '](/assets/uploads/files/' + newFName + ')';
                         post._content += ' ' + attUrl + ' ';
                         Exporter.log('Check for Attachment ' + post._content);
                     }
-
                     
-
                 }
                 //Exporter.log(post);
                 callback(err, post);
