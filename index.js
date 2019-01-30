@@ -684,19 +684,20 @@ var fs = require('fs');
 
                     var  patt = new RegExp(/<ATTACHMENT.*?\/ATTACHMENT>/gm);
                     var test = patt.test(post._content);
-                    
+
                     if(test === true){
                         var picUrl = '![' + newFName + '](/assets/uploads/files/' + newFName + ')';
 
                         var patt2 = new RegExp(fileName, 'gm');
                         post._content = post._content.replace(patt2, picUrl);
-                        Exporter.log('Check for Attachment ' + post._content);
-                    } /*else{
+                        
+                    }else{
                         var attUrl = '[' + newFName + '](/assets/uploads/files/' + newFName + ')';
                         post._content += ' ' + attUrl + ' ';
+                        Exporter.log('Check for Attachment ' + post._content);
                     }
 
-                    */
+                    
 
                 }
                 //Exporter.log(post);
