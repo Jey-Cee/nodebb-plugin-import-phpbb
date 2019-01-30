@@ -550,7 +550,7 @@ var fs = require('fs');
                                 Exporter.error(err);
                                 return callback(err);
                             }
-                            Exporter.log(topic_wBlob);
+                            //Exporter.log(topic_wBlob);
                             map[topic._content] = topic_wBlob;
                             cb();
                         });
@@ -665,7 +665,7 @@ var fs = require('fs');
                     Exporter.error(err);
                     return callback(err);
                 }
-                Exporter.log('Query OK ' + JSON.stringify(attachments));
+                //Exporter.log('Query OK ' + JSON.stringify(attachments));
                 for(var i in attachments){
                     var file = attachments[i]['_loc'];
                     var fileName = attachments[i]['_name'];
@@ -691,19 +691,19 @@ var fs = require('fs');
 
                         var cs = ['/', '[', ']', '(', ')', '{', '}', '?', '*', '+', '^', '$'];
                         for(var x in cs){
-                            
+
                                 var r = new RegExp('\\'+cs[x], 'g');
                                 fileName = fileName.replace(r, '\\' + cs[x])
 
                         }
 
-                        var patt2 = new RegExp(fileName, 'gm');
+                        var patt2 = new RegExp('filename="' + fileName, 'gm');
                         post._content = post._content.replace(patt2, picUrl);
 
                     }else{
                         var attUrl = '[' + newFName + '](/assets/uploads/files/' + newFName + ')';
                         post._content += ' ' + attUrl + ' ';
-                        Exporter.log('Check for Attachment ' + post._content);
+                        //Exporter.log('Check for Attachment ' + post._content);
                     }
 
                 }
