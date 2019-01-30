@@ -605,7 +605,7 @@ var fs = require('fs');
                 var postWork = rows.map(function(post) {
                     return function(cb) {
                         // don't add unapproved posts
-                        if (post._approved == 0) {
+                        if (post._approved === 0) {
                             cb();
                             return;
                         }
@@ -672,17 +672,20 @@ var fs = require('fs');
                     var fid = attachments[i]['_fid'];
 
                     var newFName = fid + '_' + fileName;
-                    Exporter.log(newFName);
+                    
 
                     //copy file
                     fs.copyFile('/var/www/forum/files/' + file, '/opt/nodebb/public/uploads/files/' + newFName, function(err){
-                        Exporter.error(err);
+                        if(err){
+                            Exporter.error(err);
+                        }
+
                     });
 
-                    /*var  patt = new RegExp(/<ATTACHMENT.*?\/ATTACHMENT>/gm);
+                    var  patt = new RegExp(/<ATTACHMENT.*?\/ATTACHMENT>/gm);
                     var test = patt.test(post._content);
-
-                    if(test === true){
+                    Exporter.log('Check for Attachment ' + test);
+                    /*if(test === true){
                         var picUrl = '![' + newFName + '](/assets/uploads/files/' + newFName + ')';
 
                         var patt2 = new RegExp(fileName, 'gm');
