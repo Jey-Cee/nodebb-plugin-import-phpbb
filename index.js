@@ -686,9 +686,12 @@ var fs = require('fs');
                     }
 
                     //copy file
-                    fs.copyFile('/var/www/forum/files/' + file, '/opt/nodebb/public/uploads/files/' + newFName);
+                    fs.copyFile('/var/www/forum/files/' + file, '/opt/nodebb/public/uploads/files/' + newFName, function(err){
+                        Exporter.error(err);
+                    });
 
                 }
+                Exporter.log(post);
                 callback(err, post);
 
             });
