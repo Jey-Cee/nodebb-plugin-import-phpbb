@@ -636,12 +636,12 @@ var fs = require('fs');
         callback = !_.isFunction(callback) ? noop : callback;
         Exporter.log('getPostAttachments');
 
-        var attachmentsFolder = Exporter.config('attachmentsFolder');
+        /*var attachmentsFolder = Exporter.config('attachmentsFolder');
         if (attachmentsFolder == '') {
             Exporter.log('No path for Attachments to migrate');
             callback(null, post);
             return;
-        }
+        }*/
 
         var err;
         var prefix = Exporter.config('prefix');
@@ -683,7 +683,7 @@ var fs = require('fs');
                         post._content = post._content.replace(patt2, picUrl);
                     }else{
                         var attUrl = '[' + newFName + '](/assets/uploads/files/' + newFName + ')';
-                        post._content += ' ' + attURL + ' ';
+                        post._content += ' ' + attUrl + ' ';
                     }
 
                     //copy file
