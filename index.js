@@ -665,10 +665,11 @@ var fs = require('fs');
                     Exporter.error(err);
                     return callback(err);
                 }
-                Exporter.log('Query OK ' + attachments);
-                /*for(var i in attachments){
+                Exporter.log('Query OK ' + JSON.stringify(attachments));
+                for(var i in attachments){
                     var file = attachments[i]['_loc'];
-                    var fileName = attachments[i]['_name'];
+                    Exporter.log(file);
+                    /*var fileName = attachments[i]['_name'];
                     var fid = attachments[i]['_fid'];
 
                     var newFName = fid + '_' + fileName;
@@ -689,9 +690,9 @@ var fs = require('fs');
                     //copy file
                     fs.copyFile('/var/www/forum/files/' + file, '/opt/nodebb/public/uploads/files/' + newFName, function(err){
                         Exporter.error(err);
-                    });
+                    });*/
 
-                }*/
+                }
                 //Exporter.log(post);
                 callback(err, post);
 
