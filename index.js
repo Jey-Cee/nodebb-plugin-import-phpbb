@@ -638,6 +638,7 @@ var fs = require('fs');
 
         var attachmentsFolder = Exporter.config('attachmentsFolder');
         if (attachmentsFolder == '') {
+            Exporter.log('No path for Attachments to migrate');
             callback(null, post);
             return;
         }
