@@ -697,7 +697,7 @@ var fs = require('fs');
                         var picUrl = '![' + newFName + '](/assets/uploads/files/' + newFName + ')';
 
                         var patt2 = new RegExp('filename="' + fileName, 'gm');
-                        post._content = post._content.replace(patt2, picUrl);
+                        post._content = post._content.replace(patt2, ' ' + picUrl + ' ');
 
                     }else{
                         var attUrl = '[' + newFName + '](/assets/uploads/files/' + newFName + ')';
