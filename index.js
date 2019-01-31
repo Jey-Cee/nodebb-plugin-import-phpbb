@@ -671,6 +671,9 @@ var fs = require('fs');
                     var fileName = attachments[i]['_name'];
                     var fid = attachments[i]['_fid'];
 
+                    var picUrl = '![' + newFName + '](/assets/uploads/files/' + newFName + ')';
+                    var attUrl = '[' + newFName + '](/assets/uploads/files/' + newFName + ')';
+
                     var cs = ['/', '[', ']', '(', ')', '{', '}', '?', '*', '+', '^', '$'];
                     for(var x in cs){
 
@@ -678,7 +681,7 @@ var fs = require('fs');
                         fileName = fileName.replace(r, '\\' + cs[x])
 
                     }
-                    
+
                     var newFName = fid + '_' + fileName;
 
 
@@ -694,13 +697,13 @@ var fs = require('fs');
                     var test = patt.test(post._content);
 
                     if(test === true){
-                        var picUrl = '![' + newFName + '](/assets/uploads/files/' + newFName + ')';
+                        
 
                         var patt2 = new RegExp('filename="' + fileName, 'gm');
-                        post._content = post._content.replace(patt2, ' ' + picUrl + ' ');
+                        post._content = post._content.replace(patt2, picUrl);
 
                     }else{
-                        var attUrl = '[' + newFName + '](/assets/uploads/files/' + newFName + ')';
+                        
                         post._content += '<br/> ' + attUrl + ' ';
                         //Exporter.log('Check for Attachment ' + post._content);
                     }
