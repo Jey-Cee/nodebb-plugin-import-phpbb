@@ -686,21 +686,34 @@ var fs = require('fs');
 
                     });
 
-                    var  patt = new RegExp(/<ATTACHMENT.*?\/ATTACHMENT>/gm);
-                    var test = patt.test(post._content);
+                    let patt = new RegExp(/<ATTACHMENT.*?\/ATTACHMENT>/gm);
+                    let test = patt.test(post._content);
 
                     if(test === true){
 
-                        var cs = ['/', '[', ']', '(', ')', '{', '}', '?', '*', '+', '^', '$'];
-                        for(var x in cs){
+                        /*const cs = ['/', '[', ']', '(', ')', '{', '}', '?', '*', '+', '^', '$'];
+                        for(let x in cs){
 
-                            var r = new RegExp('\\'+cs[x], 'g');
+                            let r = new RegExp('\\'+cs[x], 'g');
                             fileName = fileName.replace(r, '\\' + cs[x])
 
-                        }
+                        }*/
 
-                        var picUrl = '![' + textFName + '](/assets/uploads/files/' + textFName + ')';
-                        var patt2 = new RegExp('filename="' + fileName, 'gm');
+                        fileName = fileName.replace('/', '\/');
+                        fileName = fileName.replace('[', '\[');
+                        fileName = fileName.replace(']', '\]');
+                        fileName = fileName.replace('(', '\(');
+                        fileName = fileName.replace(')', '\)');
+                        fileName = fileName.replace('{', '\{');
+                        fileName = fileName.replace('}', '\}');
+                        fileName = fileName.replace('?', '\?');
+                        fileName = fileName.replace('*', '\*');
+                        fileName = fileName.replace('+', '\+');
+                        fileName = fileName.replace('^', '\^');
+                        fileName = fileName.replace('$', '\$');
+
+                        let picUrl = '![' + textFName + '](/assets/uploads/files/' + textFName + ')';
+                        let patt2 = new RegExp('filename="' + fileName, 'gm');
                         post._content = post._content.replace(patt2, picUrl);
 
                     }else{
