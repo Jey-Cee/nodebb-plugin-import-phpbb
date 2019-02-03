@@ -626,7 +626,7 @@ var fs = require('fs');
                     };
                 });
 
-                async.parallel(postWork, function(err) {
+                async.parallel(postWork, 50, function(err) {
                     callback(err, map);
                 });
             });
