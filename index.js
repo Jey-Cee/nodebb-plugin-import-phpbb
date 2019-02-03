@@ -699,18 +699,7 @@ var fs = require('fs');
 
                         }*/
 
-                        fileName = fileName.replace('/', '\\/');
-                        fileName = fileName.replace('[', '\\[');
-                        fileName = fileName.replace(']', '\\]');
-                        fileName = fileName.replace('(', '\\(');
-                        fileName = fileName.replace(')', '\\)');
-                        fileName = fileName.replace('{', '\\{');
-                        fileName = fileName.replace('}', '\\}');
-                        fileName = fileName.replace('?', '\\?');
-                        fileName = fileName.replace('*', '\\*');
-                        fileName = fileName.replace('+', '\\+');
-                        fileName = fileName.replace('^', '\\^');
-                        fileName = fileName.replace('$', '\\$');
+                        fileName = fileName.replace(/[\/\[\]\(\)\{\}\?\*\+\^\$]/g, '\\$&');
 
                         let picUrl = '![' + textFName + '](/assets/uploads/files/' + textFName + ')';
                         let patt2 = new RegExp('filename="' + fileName, 'gm');
