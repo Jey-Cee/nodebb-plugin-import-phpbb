@@ -671,16 +671,9 @@ var fs = require('fs');
                     var fileName = attachments[i]['_name'];
                     var fid = attachments[i]['_fid'];
 
-                   
+
                     var textFName = fid + '_' + fileName;
 
-                    var cs = ['/', '[', ']', '(', ')', '{', '}', '?', '*', '+', '^', '$'];
-                    for(var x in cs){
-
-                        var r = new RegExp('\\'+cs[x], 'g');
-                        fileName = fileName.replace(r, '\\' + cs[x])
-
-                    }
 
                     var newFName = fid + '_' + fileName;
 
@@ -697,6 +690,14 @@ var fs = require('fs');
                     var test = patt.test(post._content);
 
                     if(test === true){
+
+                        var cs = ['/', '[', ']', '(', ')', '{', '}', '?', '*', '+', '^', '$'];
+                        for(var x in cs){
+
+                            var r = new RegExp('\\'+cs[x], 'g');
+                            fileName = fileName.replace(r, '\\' + cs[x])
+
+                        }
 
                         var picUrl = '![' + textFName + '](/assets/uploads/files/' + textFName + ')';
                         var patt2 = new RegExp('filename="' + fileName, 'gm');
