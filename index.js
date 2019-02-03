@@ -671,8 +671,8 @@ var fs = require('fs');
                     var fileName = attachments[i]['_name'];
                     var fid = attachments[i]['_fid'];
 
-                    var picUrl = '![' + newFName + '](/assets/uploads/files/' + newFName + ')';
-                    var attUrl = '[' + newFName + '](/assets/uploads/files/' + newFName + ')';
+                   
+                    var textFName = fid + '_' + fileName;
 
                     var cs = ['/', '[', ']', '(', ')', '{', '}', '?', '*', '+', '^', '$'];
                     for(var x in cs){
@@ -697,13 +697,13 @@ var fs = require('fs');
                     var test = patt.test(post._content);
 
                     if(test === true){
-                        
 
+                        var picUrl = '![' + textFName + '](/assets/uploads/files/' + textFName + ')';
                         var patt2 = new RegExp('filename="' + fileName, 'gm');
                         post._content = post._content.replace(patt2, picUrl);
 
                     }else{
-                        
+                        var attUrl = '[' + textFName + '](/assets/uploads/files/' + textFName + ')';
                         post._content += '<br/> ' + attUrl + ' ';
                         //Exporter.log('Check for Attachment ' + post._content);
                     }
