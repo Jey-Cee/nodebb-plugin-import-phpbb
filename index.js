@@ -699,12 +699,12 @@ var fs = require('fs');
 
                         //fileName = fileName.replace(/[\/\[\]\(\)\{\}\?\*\+\^\$]/g, '\\$&');
 
-                        let picUrl = '![' + newFName + '](/assets/uploads/files/' + newFName + ')';
+                        let picUrl = ' ![' + newFName + '](/assets/uploads/files/' + newFName + ')  ';
                         let patt2 = new RegExp('filename="' + fileName, 'gm');
                         post._content = post._content.replace(patt2, picUrl);
 
                     }else{
-                        var attUrl = '[' + newFName + '](/assets/uploads/files/' + newFName + ')';
+                        var attUrl = ' [' + newFName + '](/assets/uploads/files/' + newFName + ') ';
                         post._content += '<br/> ' + attUrl + ' ';
                         //Exporter.log('Check for Attachment ' + post._content);
                     }
