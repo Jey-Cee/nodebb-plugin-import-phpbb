@@ -671,11 +671,8 @@ var fs = require('fs');
                     var fileName = attachments[i]['_name'];
                     var fid = attachments[i]['_fid'];
 
-
-                    var textFName = fid + '_' + fileName;
-
-
                     var newFName = fid + '_' + fileName;
+                    newFName = newFName.replace(/\s/gm, '_');
 
 
                     //copy file
@@ -691,22 +688,22 @@ var fs = require('fs');
 
                     if(test === true){
 
-                        /*const cs = ['/', '[', ']', '(', ')', '{', '}', '?', '*', '+', '^', '$'];
+                        const cs = ['/', '[', ']', '(', ')', '{', '}', '?', '*', '+', '^', '$'];
                         for(let x in cs){
 
                             let r = new RegExp('\\'+cs[x], 'g');
                             fileName = fileName.replace(r, '\\' + cs[x])
 
-                        }*/
+                        }
 
-                        fileName = fileName.replace(/[\/\[\]\(\)\{\}\?\*\+\^\$]/g, '\\$&');
+                        //fileName = fileName.replace(/[\/\[\]\(\)\{\}\?\*\+\^\$]/g, '\\$&');
 
-                        let picUrl = '![' + textFName + '](/assets/uploads/files/' + textFName + ')';
+                        let picUrl = '![' + newFName + '](/assets/uploads/files/' + newFName + ')';
                         let patt2 = new RegExp('filename="' + fileName, 'gm');
                         post._content = post._content.replace(patt2, picUrl);
 
                     }else{
-                        var attUrl = '[' + textFName + '](/assets/uploads/files/' + textFName + ')';
+                        var attUrl = '[' + newFName + '](/assets/uploads/files/' + newFName + ')';
                         post._content += '<br/> ' + attUrl + ' ';
                         //Exporter.log('Check for Attachment ' + post._content);
                     }
