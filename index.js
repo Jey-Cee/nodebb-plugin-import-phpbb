@@ -674,6 +674,7 @@ var fs = require('fs');
                     var newFName = fid + '_' + fileName;
                     newFName = newFName.replace(/\s/gm, '_');
                     newFName = newFName.replace(/[^A-Za-z0-9-\.]/g, '_');
+                    newFName = newFName.toLowerCase();
 
 
                     //copy file
